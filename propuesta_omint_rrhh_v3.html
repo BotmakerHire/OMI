@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propuesta ATS · Evolución Bot RRHH Omint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-elevated: #131313;
+    --bg-card: #181818;
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.15);
+    --text: #f5f5f5;
+    --text-muted: #9a9a9a;
+    --text-dim: #5a5a5a;
+    --accent: #d4ff3d;
+    --accent-dim: #b8e02a;
+    --omint: #00a3a3;
+    --danger: #ff4d4d;
+    --warning: #ffaa33;
+    --success: #4ddb87;
+    --serif: 'Instrument Serif', serif;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', system-ui, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    font-weight: 300;
+  }
+
+  /* NAV */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 16px 32px;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .nav-brand {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .nav-brand span { color: var(--accent); }
+  .nav-links {
+    display: flex; gap: 28px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    padding: 140px 32px 80px;
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 20%; right: -10%;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(212,255,61,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    display: flex; gap: 24px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .hero-meta span { color: var(--text-muted); }
+  .hero-partner {
+    display: flex; align-items: center; gap: 10px;
+    padding: 4px 4px 4px 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+  }
+  .hero-partner img {
+    height: 22px;
+    border-radius: 100px;
+    display: block;
+  }
+  .hero-title {
+    font-family: var(--serif);
+    font-size: clamp(48px, 7vw, 96px);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 32px;
+    max-width: 1100px;
+  }
+  .hero-title em { font-style: italic; color: var(--accent); }
+  .hero-sub {
+    font-size: 20px;
+    color: var(--text-muted);
+    max-width: 720px;
+    font-weight: 300;
+    margin-bottom: 56px;
+  }
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    border-top: 1px solid var(--border);
+    padding-top: 32px;
+  }
+  .hero-stat-num {
+    font-family: var(--serif);
+    font-size: 56px;
+    line-height: 1;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .hero-stat-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* SECCIONES */
+  .section {
+    padding: 120px 32px;
+    max-width: 1280px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .section-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-tag::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--accent);
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    max-width: 900px;
+  }
+  .section-title em { font-style: italic; }
+  .section-intro {
+    font-size: 18px;
+    color: var(--text-muted);
+    max-width: 720px;
+    margin-bottom: 64px;
+    font-weight: 300;
+  }
+
+  /* DIAGNÓSTICO - ANTES VS DESPUÉS */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 64px;
+  }
+  .compare-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 32px;
+    position: relative;
+  }
+  .compare-card.bad { border-left: 3px solid var(--danger); }
+  .compare-card.good { border-left: 3px solid var(--accent); }
+  .compare-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+  .compare-card.bad .compare-label { color: var(--danger); }
+  .compare-card.good .compare-label { color: var(--accent); }
+  .compare-title {
+    font-family: var(--serif);
+    font-size: 28px;
+    margin-bottom: 24px;
+    line-height: 1.2;
+  }
+  .compare-list { list-style: none; }
+  .compare-list li {
+    padding: 12px 0;
+    border-top: 1px solid var(--border);
+    font-size: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .compare-list li::before {
+    content: attr(data-icon);
+    font-family: var(--mono);
+    font-size: 11px;
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+  .compare-card.bad .compare-list li::before { color: var(--danger); }
+  .compare-card.good .compare-list li::before { color: var(--accent); }
+
+  /* DIAGRAMA FLOW ACTUAL */
+  .flow-diagram {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 40px;
+    margin-bottom: 32px;
+    overflow-x: auto;
+  }
+  .flow-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 24px;
+  }
+  .flow-tree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 800px;
+  }
+  .flow-node {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 10px 20px;
+    font-family: var(--mono);
+    font-size: 12px;
+    border-radius: 4px;
+    position: relative;
+  }
+  .flow-node.root {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 500;
+  }
+  .flow-branches {
+    display: flex;
+    gap: 16px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .flow-branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .flow-line {
+    width: 1px;
+    height: 24px;
+    background: var(--border-strong);
+  }
+  .flow-leaves {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .flow-leaf {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    border-radius: 4px;
+  }
+
+  /* DEMO REAL CHAT */
+  .demo-intro {
+    background: linear-gradient(135deg, rgba(212,255,61,0.06) 0%, transparent 70%);
+    border: 1px solid var(--border);
+    padding: 24px 32px;
+    margin-bottom: 40px;
+    display: flex; gap: 16px; align-items: center;
+    border-radius: 4px;
+  }
+  .demo-intro-icon {
+    width: 48px; height: 48px;
+    background: var(--accent);
+    color: var(--bg);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-weight: 500;
+    flex-shrink: 0;
+    font-size: 20px;
+  }
+  .demo-intro-text {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .demo-intro-text strong { color: var(--text); font-weight: 500; }
+
+  .demo-wrap {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  .demo-suggestions {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 24px;
+    position: sticky;
+    top: 100px;
+  }
+  .demo-suggestions-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+  .demo-suggestions-list { display: flex; flex-direction: column; gap: 8px; }
+  .demo-suggestion {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 16px;
+    text-align: left;
+    font-family: var(--sans);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 4px;
+    line-height: 1.4;
+  }
+  .demo-suggestion:hover {
+    border-color: var(--accent);
+    background: rgba(212,255,61,0.05);
+    color: var(--accent);
+  }
+  .demo-suggestion-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+    display: block;
+  }
+  .demo-info-pill {
+    margin-top: 16px;
+    padding: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .demo-info-pill strong {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .demo-phone {
+    background: #075e54;
+    border-radius: 24px;
+    padding: 8px;
+    max-width: 440px;
+    margin: 0 auto;
+    box-shadow: 0 0 80px rgba(212,255,61,0.08);
+  }
+  .demo-phone-screen {
+    background: #ece5dd;
+    border-radius: 18px;
+    overflow: hidden;
+    height: 600px;
+    display: flex;
+    flex-direction: column;
+  }
+  .demo-phone-header {
+    background: #075e54;
+    color: white;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--sans);
+  }
+  .demo-phone-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--omint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .demo-phone-info { flex: 1; }
+  .demo-phone-name { font-weight: 500; font-size: 14px; }
+  .demo-phone-status { font-size: 11px; opacity: 0.8; }
+  .demo-phone-chat {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(0,0,0,0.02) 1px, transparent 1px),
+      radial-gradient(circle at 80% 70%, rgba(0,0,0,0.02) 1px, transparent 1px);
+    background-size: 30px 30px;
+    display: flex;
+    flex-direction: column;
+  }
+  .demo-phone-input {
+    background: #f0f0f0;
+    padding: 10px 12px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    border-top: 1px solid rgba(0,0,0,0.05);
+  }
+  .demo-phone-input input {
+    flex: 1;
+    border: none;
+    background: white;
+    padding: 10px 14px;
+    border-radius: 24px;
+    font-family: var(--sans);
+    font-size: 13px;
+    outline: none;
+    color: #303030;
+  }
+  .demo-phone-input input:focus { box-shadow: 0 0 0 2px rgba(0,163,163,0.2); }
+  .demo-phone-input button {
+    background: #075e54;
+    color: white;
+    border: none;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .demo-phone-input button:hover { background: #054d44; }
+  .demo-phone-input button:disabled { background: #999; cursor: not-allowed; }
+
+  .msg {
+    max-width: 80%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #303030;
+    font-family: var(--sans);
+    position: relative;
+    animation: msgIn 0.4s ease-out;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .msg.user {
+    background: #dcf8c6;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+  }
+  .msg.bot {
+    background: white;
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+  }
+  .msg-time {
+    font-size: 9px;
+    color: #888;
+    margin-top: 4px;
+    text-align: right;
+  }
+  .msg strong { font-weight: 600; }
+  .msg em { color: var(--omint); font-style: normal; font-weight: 500; }
+  .typing {
+    display: inline-flex;
+    gap: 3px;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 8px;
+    border-bottom-left-radius: 2px;
+    margin-bottom: 8px;
+    width: fit-content;
+    align-self: flex-start;
+  }
+  .typing span {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #999;
+    animation: typing 1.4s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typing {
+    0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-4px); }
+  }
+  .msg-welcome {
+    background: rgba(255,255,255,0.6);
+    color: #555;
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-align: center;
+    margin: 0 auto 12px;
+    max-width: 90%;
+    align-self: center;
+  }
+
+  /* ARQUITECTURA */
+  .arch-layers {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .arch-layer {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 32px;
+    display: grid;
+    grid-template-columns: 100px 1fr 280px;
+    gap: 32px;
+    align-items: center;
+    transition: all 0.3s;
+  }
+  .arch-layer:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+  }
+  .arch-layer-num {
+    font-family: var(--serif);
+    font-size: 64px;
+    line-height: 1;
+    color: var(--accent);
+    font-style: italic;
+  }
+  .arch-layer-title {
+    font-family: var(--serif);
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+  .arch-layer-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    max-width: 500px;
+  }
+  .arch-layer-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .arch-pill {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    border-radius: 12px;
+    color: var(--text-muted);
+  }
+  .arch-pill.highlight {
+    background: rgba(212,255,61,0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* TRANSACCIONES */
+  .trans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .trans-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 24px;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .trans-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .trans-card.existing { border-left: 3px solid var(--text-muted); }
+  .trans-card.new { border-left: 3px solid var(--accent); }
+  .trans-badge {
+    position: absolute;
+    top: 12px; right: 12px;
+    font-family: var(--mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 4px 8px;
+    border-radius: 3px;
+  }
+  .trans-badge.existing {
+    background: rgba(255,255,255,0.08);
+    color: var(--text-muted);
+  }
+  .trans-badge.new {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .trans-title {
+    font-family: var(--serif);
+    font-size: 22px;
+    margin-bottom: 8px;
+    margin-top: 20px;
+    line-height: 1.2;
+  }
+  .trans-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .trans-tech {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    line-height: 1.6;
+  }
+
+  /* FASES */
+  .phases {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+  }
+  .phase {
+    padding: 32px 24px;
+    border-right: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+    position: relative;
+  }
+  .phase:last-child { border-right: 1px solid var(--border); }
+  .phase:first-child { border-left: 1px solid var(--border); }
+  .phase-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .phase-duration {
+    font-family: var(--serif);
+    font-size: 36px;
+    margin-bottom: 4px;
+    font-style: italic;
+  }
+  .phase-duration-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    letter-spacing: 0.1em;
+  }
+  .phase-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+  .phase-list {
+    list-style: none;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .phase-list li {
+    padding: 6px 0;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+  }
+  .phase-list li::before {
+    content: '→';
+    color: var(--accent);
+  }
+  .phases-note {
+    margin-top: 32px;
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-muted);
+    border-left: 3px solid var(--accent);
+  }
+  .phases-note strong { color: var(--text); font-weight: 500; }
+
+  /* INVERSIÓN */
+  .invest-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .invest-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 40px;
+    position: relative;
+  }
+  .invest-card.featured {
+    border-color: var(--accent);
+    background: linear-gradient(180deg, rgba(212,255,61,0.04) 0%, var(--bg-card) 100%);
+  }
+  .invest-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+  .invest-card.featured .invest-tag { color: var(--accent); }
+  .invest-name {
+    font-family: var(--serif);
+    font-size: 32px;
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+  .invest-price {
+    font-family: var(--serif);
+    font-size: 56px;
+    margin-bottom: 4px;
+    line-height: 1;
+  }
+  .invest-price-detail {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+  .invest-list {
+    list-style: none;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+  }
+  .invest-list li {
+    padding: 10px 0;
+    font-size: 13px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .invest-list li::before {
+    content: '✓';
+    color: var(--accent);
+    flex-shrink: 0;
+    font-weight: 600;
+  }
+  .invest-note {
+    margin-top: 32px;
+    padding: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-muted);
+    border-radius: 4px;
+  }
+
+  /* ROI */
+  .roi {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 64px 48px;
+    margin-top: 64px;
+    position: relative;
+    overflow: hidden;
+  }
+  .roi::before {
+    content: '';
+    position: absolute;
+    top: -50%; right: -20%;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(212,255,61,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .roi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    position: relative;
+  }
+  .roi-title {
+    font-family: var(--serif);
+    font-size: 36px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .roi-desc {
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+  .roi-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .roi-metric {
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+  }
+  .roi-metric-num {
+    font-family: var(--serif);
+    font-size: 42px;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .roi-metric-label {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* FOOTER */
+  .footer {
+    padding: 80px 32px 48px;
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+  }
+  .footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 64px;
+    margin-bottom: 48px;
+  }
+  .footer-brand {
+    font-family: var(--serif);
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+  .footer-tagline {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    max-width: 360px;
+  }
+  .footer-partner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: fit-content;
+  }
+  .footer-partner-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .footer-partner img {
+    height: 28px;
+    border-radius: 4px;
+    display: block;
+  }
+  .footer-col-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 16px;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col li {
+    padding: 6px 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .footer-bottom {
+    max-width: 1280px;
+    margin: 0 auto;
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 968px) {
+    .nav-links { display: none; }
+    .hero-stats { grid-template-columns: repeat(2, 1fr); }
+    .compare-grid, .invest-grid, .demo-wrap, .roi-grid, .footer-inner { grid-template-columns: 1fr; }
+    .arch-layer { grid-template-columns: 1fr; gap: 16px; }
+    .arch-layer-num { font-size: 48px; }
+    .phases { grid-template-columns: 1fr; }
+    .phase { border-right: none; border-bottom: 1px solid var(--border); }
+    .demo-suggestions { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">automation tech studio <span>·</span> propuesta</div>
+  <div class="nav-links">
+    <a href="#diagnostico">Diagnóstico</a>
+    <a href="#demo">Demo</a>
+    <a href="#arquitectura">Arquitectura</a>
+    <a href="#transacciones">Transacciones</a>
+    <a href="#fases">Fases</a>
+    <a href="#inversion">Inversión</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-meta">
+    <span>Cliente · Omint RRHH</span>
+    <span>Documento · v1.0</span>
+    <span>Confidencial</span>
+    <div class="hero-partner">
+      <span style="font-size:10px;color:var(--text-dim);">Powered by</span>
+      <img src="data:image/jpeg;base64,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" alt="Botmaker" />
+    </div>
+  </div>
+  <h1 class="hero-title">
+    De menú jerárquico a <em>asistente conversacional</em>: la próxima generación del bot RRHH.
+  </h1>
+  <p class="hero-sub">
+    Una propuesta para evolucionar el bot de RRHH de Omint sobre Botmaker hacia una arquitectura IA-first 100% conversacional. Sin árbol de opciones, sin navegación forzada: el colaborador escribe lo que necesita y el agente resuelve.
+  </p>
+  <div class="hero-stats">
+    <div>
+      <div class="hero-stat-num">9 → 1</div>
+      <div class="hero-stat-label">Ramas de menú colapsadas en un agente</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">+7</div>
+      <div class="hero-stat-label">Transacciones nuevas automatizables</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">~60%</div>
+      <div class="hero-stat-label">Reducción estimada en consumo de tokens</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">4.5/5</div>
+      <div class="hero-stat-label">Nivel objetivo de autonomía</div>
+    </div>
+  </div>
+</section>
+
+<!-- DIAGNÓSTICO -->
+<section class="section" id="diagnostico">
+  <div class="section-tag">01 · Diagnóstico</div>
+  <h2 class="section-title">El bot actual <em>informa</em>. El bot nuevo <em>resuelve</em>.</h2>
+  <p class="section-intro">
+    Hoy el bot funciona como un IVR jerárquico sobre Botmaker: el colaborador entra, navega 2 o 3 niveles de menú, y termina leyendo información estática. La IA participa solo como router entre cajitas. La nueva base de conocimiento (24 temas con sub-temas, palabras clave, contactos, plazos) hace inviable mantener este modelo: significaría 50+ nodos nuevos.
+  </p>
+
+  <div class="compare-grid">
+    <div class="compare-card bad">
+      <div class="compare-label">▲ Actual</div>
+      <div class="compare-title">Árbol de menú estático</div>
+      <ul class="compare-list">
+        <li data-icon="01">9 ramas paralelas con estructura repetida (Variable → Opciones → Mensaje)</li>
+        <li data-icon="02">IA usada como clasificador de menú — costosa y poco útil</li>
+        <li data-icon="03">Información plana: el usuario lee, no resuelve</li>
+        <li data-icon="04">Una única transacción real (turnos de vacunación)</li>
+        <li data-icon="05">Agregar contenido = agregar cajitas. No escala.</li>
+        <li data-icon="06">Sin captura de intención ni métricas de uso real</li>
+      </ul>
+    </div>
+
+    <div class="compare-card good">
+      <div class="compare-label">▼ Propuesta ATS</div>
+      <div class="compare-title">Agente conversacional con capa transaccional</div>
+      <ul class="compare-list">
+        <li data-icon="01">Un agente IA con RAG sobre base de conocimiento estructurada</li>
+        <li data-icon="02">IA usada donde aporta valor (comprensión + respuesta)</li>
+        <li data-icon="03">Lógica determinística para transacciones (sin desperdicio de tokens)</li>
+        <li data-icon="04">7 transacciones nuevas conectadas a sistemas reales</li>
+        <li data-icon="05">Escalable: nuevo contenido = nuevo registro en base, no nuevo flow</li>
+        <li data-icon="06">Métricas de intent automáticas para mejora continua</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="flow-diagram">
+    <div class="flow-title">▸ Bot actual · simplificado</div>
+    <div class="flow-tree">
+      <div class="flow-node root">Mensaje de bienvenida</div>
+      <div class="flow-line"></div>
+      <div class="flow-node">¿Omint? · Menú principal</div>
+      <div class="flow-line"></div>
+      <div class="flow-branches">
+        <div class="flow-branch">
+          <div class="flow-node">Gest. admin</div>
+          <div class="flow-leaves">
+            <div class="flow-leaf">12 opciones</div>
+          </div>
+        </div>
+        <div class="flow-branch">
+          <div class="flow-node">Postularme</div>
+          <div class="flow-leaves">
+            <div class="flow-leaf">7 opciones</div>
+          </div>
+        </div>
+        <div class="flow-branch">
+          <div class="flow-node">Beneficios</div>
+          <div class="flow-leaves">
+            <div class="flow-leaf">3 sub-menús</div>
+          </div>
+        </div>
+        <div class="flow-branch">
+          <div class="flow-node">Sueldos</div>
+          <div class="flow-leaves">
+            <div class="flow-leaf">9 opciones</div>
+          </div>
+        </div>
+        <div class="flow-branch">
+          <div class="flow-node">Viví exp</div>
+          <div class="flow-leaves">
+            <div class="flow-leaf">7 mensajes</div>
+          </div>
+        </div>
+        <div class="flow-branch">
+          <div class="flow-node">Voluntariado</div>
+          <div class="flow-leaves">
+            <div class="flow-leaf">1 bloque</div>
+          </div>
+        </div>
+        <div class="flow-branch">
+          <div class="flow-node">Talento</div>
+          <div class="flow-leaves">
+            <div class="flow-leaf">3 mensajes</div>
+          </div>
+        </div>
+        <div class="flow-branch">
+          <div class="flow-node">Vacunación ★</div>
+          <div class="flow-leaves">
+            <div class="flow-leaf">turnos · única transacción</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO REAL -->
+<section class="section" id="demo">
+  <div class="section-tag">02 · Demo conversacional en vivo</div>
+  <h2 class="section-title">Hablale <em>como vos quieras</em>. Probalo.</h2>
+  <p class="section-intro">
+    Esta es una demo real, conectada a un modelo de IA con la base de conocimiento de Omint. Escribí cualquier consulta — sobre licencias, recibos, beneficios, certificados, gimnasios, voluntariado — y el agente te va a responder con información concreta. Probá los ejemplos sugeridos o escribí lo que quieras.
+  </p>
+
+  <div class="demo-intro">
+    <div class="demo-intro-icon">✦</div>
+    <div class="demo-intro-text">
+      <strong>Esta es una conversación real.</strong> El agente está conectado a la misma base de conocimiento que tendrá el bot productivo: información sobre beneficios, sueldos, licencias, soporte técnico, búsquedas internas y más.
+    </div>
+  </div>
+
+  <div class="demo-wrap">
+    <div class="demo-suggestions">
+      <div class="demo-suggestions-title">Sugerencias para probar</div>
+      <div class="demo-suggestions-list" id="suggestions"></div>
+
+      <div class="demo-info-pill">
+        <strong>Tip ›</strong> Probá tutearlo, hacer preguntas indirectas, o mezclar varias dudas en un mismo mensaje. El bot mantiene el contexto.
+      </div>
+    </div>
+
+    <div class="demo-phone">
+      <div class="demo-phone-screen">
+        <div class="demo-phone-header">
+          <div class="demo-phone-avatar">O</div>
+          <div class="demo-phone-info">
+            <div class="demo-phone-name">Omint · Asistente RRHH</div>
+            <div class="demo-phone-status">en línea · responde en segundos</div>
+          </div>
+        </div>
+        <div class="demo-phone-chat" id="chat">
+          <div class="msg-welcome">Hoy</div>
+          <div class="msg bot">¡Hola! 👋 Soy el asistente de RRHH de Omint. Contame qué necesitás y lo resuelvo.<div class="msg-time">10:30</div></div>
+        </div>
+        <div class="demo-phone-input">
+          <input type="text" id="userInput" placeholder="Escribí tu consulta..." maxlength="500">
+          <button id="sendBtn" onclick="sendMessage()" aria-label="Enviar">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARQUITECTURA -->
+<section class="section" id="arquitectura">
+  <div class="section-tag">03 · Arquitectura</div>
+  <h2 class="section-title">Tres capas, <em>responsabilidades claras</em>.</h2>
+  <p class="section-intro">
+    En lugar de un árbol gigante con lógica mezclada, separamos en capas. Cada una hace una cosa bien. La IA actúa donde aporta valor; lo determinístico se mantiene determinístico. Todo orquestado sobre Botmaker, la plataforma que ya usa Omint.
+  </p>
+
+  <div class="arch-layers">
+    <div class="arch-layer">
+      <div class="arch-layer-num">01</div>
+      <div>
+        <div class="arch-layer-title">Agente conversacional</div>
+        <div class="arch-layer-desc">
+          El cerebro. Recibe lenguaje natural, entiende el intent, consulta la base de conocimiento vía RAG y responde. Resuelve el 80% de las consultas informativas sin tocar ningún sub-flow.
+        </div>
+      </div>
+      <div class="arch-layer-stack">
+        <div class="arch-pill highlight">Gemini 2.0 Flash</div>
+        <div class="arch-pill">RAG embeddings</div>
+        <div class="arch-pill">Prompt estructurado</div>
+        <div class="arch-pill">Tono Omint</div>
+      </div>
+    </div>
+
+    <div class="arch-layer">
+      <div class="arch-layer-num">02</div>
+      <div>
+        <div class="arch-layer-title">Capa transaccional sobre Botmaker</div>
+        <div class="arch-layer-desc">
+          Sub-flows determinísticos en Botmaker que el agente dispara cuando detecta intención transaccional. Mantenibles, predecibles, sin consumo de IA. Replica el patrón de Vacunación a 7 transacciones más.
+        </div>
+      </div>
+      <div class="arch-layer-stack">
+        <div class="arch-pill highlight">Botmaker flows</div>
+        <div class="arch-pill highlight">Code Actions</div>
+        <div class="arch-pill">SheetDB bridge</div>
+        <div class="arch-pill">Power Automate</div>
+      </div>
+    </div>
+
+    <div class="arch-layer">
+      <div class="arch-layer-num">03</div>
+      <div>
+        <div class="arch-layer-title">Base de conocimiento</div>
+        <div class="arch-layer-desc">
+          Fuente única de verdad. Los temas se cargan en Google Sheets con estructura definida (título, contenido, contactos, links, plazos, keywords). Actualizable por RRHH sin tocar el bot.
+        </div>
+      </div>
+      <div class="arch-layer-stack">
+        <div class="arch-pill highlight">Google Sheets</div>
+        <div class="arch-pill">Vector embeddings</div>
+        <div class="arch-pill">Versionado</div>
+        <div class="arch-pill">Edición sin código</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 64px; padding: 32px; background: var(--bg-card); border: 1px solid var(--border);">
+    <div style="font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px;">▸ Flujo de decisión</div>
+    <div style="font-family: var(--mono); font-size: 13px; line-height: 2; color: var(--text-muted);">
+      Usuario escribe → <span style="color:var(--accent)">Agente clasifica intent</span><br>
+      ├─ Info pura → <span style="color:var(--text)">Responde con RAG</span><br>
+      ├─ Transaccional → <span style="color:var(--text)">Dispara sub-flow Botmaker correspondiente</span><br>
+      ├─ Escalamiento → <span style="color:var(--text)">Deriva a humano según protocolo</span><br>
+      └─ Ambiguo → <span style="color:var(--text)">Repregunta o muestra menú fallback</span>
+    </div>
+  </div>
+</section>
+
+<!-- TRANSACCIONES -->
+<section class="section" id="transacciones">
+  <div class="section-tag">04 · Transacciones</div>
+  <h2 class="section-title">El bot deja de ser una <em>guía</em>. Empieza a <em>hacer</em>.</h2>
+  <p class="section-intro">
+    El bot actual tiene 1 transacción real (turnos de vacunación). Replicamos ese patrón para automatizar 7 procesos más que hoy requieren mail, espera, o navegación al Portal de Autogestión. El usuario los resuelve por WhatsApp, en minutos.
+  </p>
+
+  <div class="trans-grid">
+    <div class="trans-card existing">
+      <div class="trans-badge existing">Existente</div>
+      <div class="trans-title">Turnos de vacunación</div>
+      <div class="trans-desc">Ya funcionando hoy. Patrón base que se replica al resto.</div>
+      <div class="trans-tech">Code Action · agenda en Sheets</div>
+    </div>
+
+    <div class="trans-card new">
+      <div class="trans-badge new">Nueva</div>
+      <div class="trans-title">Certificado de trabajo</div>
+      <div class="trans-desc">Captura DNI + motivo, dispara mail automático a Administración de Personal. Confirmación al colaborador.</div>
+      <div class="trans-tech">Power Automate · SMTP</div>
+    </div>
+
+    <div class="trans-card new">
+      <div class="trans-badge new">Nueva</div>
+      <div class="trans-title">Anticipo de sueldo</div>
+      <div class="trans-desc">Valida antigüedad y cantidad de anticipos en el año. Genera solicitud al equipo de Liquidación con calendario de pagos.</div>
+      <div class="trans-tech">Sheets · validación · workflow</div>
+    </div>
+
+    <div class="trans-card new">
+      <div class="trans-badge new">Nueva</div>
+      <div class="trans-title">Solicitud de uniforme</div>
+      <div class="trans-desc">Formulario conversacional + mail automático a uniformes@ con CC al líder del colaborador.</div>
+      <div class="trans-tech">Power Automate · directorio</div>
+    </div>
+
+    <div class="trans-card new">
+      <div class="trans-badge new">Nueva</div>
+      <div class="trans-title">Día Omint</div>
+      <div class="trans-desc">Valida antigüedad mínima 1 año y si ya se usó en el año. Coordina fecha con el líder vía Portal Autogestión.</div>
+      <div class="trans-tech">API Autogestión · validaciones</div>
+    </div>
+
+    <div class="trans-card new">
+      <div class="trans-badge new">Nueva</div>
+      <div class="trans-title">Reintegro guardería</div>
+      <div class="trans-desc">Recibe foto de factura por WhatsApp, OCR con Gemini Vision, carga DDJJ automática en Portal de Autogestión.</div>
+      <div class="trans-tech">Gemini Vision · OCR · RPA</div>
+    </div>
+
+    <div class="trans-card new">
+      <div class="trans-badge new">Nueva</div>
+      <div class="trans-title">Credencial edificio</div>
+      <div class="trans-desc">Distingue alta vs renovación por pérdida/robo. En robo dispara baja urgente por seguridad antes del trámite.</div>
+      <div class="trans-tech">Flow + mail urgente</div>
+    </div>
+
+    <div class="trans-card new">
+      <div class="trans-badge new">Nueva</div>
+      <div class="trans-title">Contacto Banco Ciudad</div>
+      <div class="trans-desc">Agenda contacto con Rodrigo Montechiesi y pre-calcula capacidad de cuota según ingreso declarado.</div>
+      <div class="trans-tech">Cálculo · agenda · mail</div>
+    </div>
+  </div>
+</section>
+
+<!-- FASES -->
+<section class="section" id="fases">
+  <div class="section-tag">05 · Implementación</div>
+  <h2 class="section-title">Cuatro semanas, <em>convivencia garantizada</em>.</h2>
+  <p class="section-intro">
+    El bot actual no se rompe nunca. Lo nuevo se construye en paralelo sobre Botmaker y convive hasta que la migración esté validada con datos reales. Sin downtime, sin riesgo operativo para RRHH. Cuatro semanas para la primera entrega completa, sin integraciones de sistemas externos.
+  </p>
+
+  <div class="phases">
+    <div class="phase">
+      <div class="phase-num">SEMANA 01</div>
+      <div class="phase-duration">1</div>
+      <div class="phase-duration-label">Semana</div>
+      <div class="phase-title">Fundación: base estructurada + agente RAG</div>
+      <ul class="phase-list">
+        <li>Estructuración de base de conocimiento en Google Sheets</li>
+        <li>Implementación de embeddings y RAG</li>
+        <li>Diseño del prompt del agente con tono Omint</li>
+        <li>Pruebas internas iniciales</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <div class="phase-num">SEMANA 02</div>
+      <div class="phase-duration">2</div>
+      <div class="phase-duration-label">Semana</div>
+      <div class="phase-title">Integración a Botmaker + convivencia con menú</div>
+      <ul class="phase-list">
+        <li>Code Actions de Botmaker para conectar al agente</li>
+        <li>Menú clásico como red de seguridad (fallback)</li>
+        <li>Logging de intents para métricas</li>
+        <li>QA conversacional con casos reales</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <div class="phase-num">SEMANA 03</div>
+      <div class="phase-duration">3</div>
+      <div class="phase-duration-label">Semana</div>
+      <div class="phase-title">Refinamiento + ajustes finos</div>
+      <ul class="phase-list">
+        <li>Ajustes de tono y estilo de respuesta</li>
+        <li>Manejo de casos ambiguos y escalamiento</li>
+        <li>Dashboard básico de métricas de uso</li>
+        <li>Validación interna con equipo RRHH</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <div class="phase-num">SEMANA 04</div>
+      <div class="phase-duration">4</div>
+      <div class="phase-duration-label">Semana</div>
+      <div class="phase-title">Salida a producción + capacitación</div>
+      <ul class="phase-list">
+        <li>Despliegue al bot productivo</li>
+        <li>Documentación técnica completa</li>
+        <li>Capacitación al equipo RRHH</li>
+        <li>Período de seguimiento post-lanzamiento</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="phases-note">
+    <strong>Nota sobre integraciones.</strong> Esta primera entrega no incluye integraciones a sistemas transaccionales (Portal de Autogestión, ITSM, ARCA, Mercado Pago). Las 7 transacciones nuevas se incorporan progresivamente en el ciclo mensual una vez activado el contrato de soporte.
+  </div>
+</section>
+
+<!-- INVERSIÓN -->
+<section class="section" id="inversion">
+  <div class="section-tag">06 · Inversión</div>
+  <h2 class="section-title">Modelo en <em>dos componentes</em>.</h2>
+  <p class="section-intro">
+    Una inversión inicial cubre el set-up completo del nuevo arquetipo conversacional. El fee mensual mantiene la operación, agrega transacciones nuevas en cada ciclo, y garantiza mejora continua sobre métricas reales.
+  </p>
+
+  <div class="invest-grid">
+    <div class="invest-card">
+      <div class="invest-tag">Set-up · One-shot</div>
+      <div class="invest-name">Desarrollo<br>inicial</div>
+      <div class="invest-price">USD 4.000</div>
+      <div class="invest-price-detail">Pago 50% inicio · 50% entrega · 4 semanas</div>
+      <ul class="invest-list">
+        <li>Estructuración de base de conocimiento</li>
+        <li>Agente conversacional con RAG sobre Botmaker</li>
+        <li>Convivencia con menú actual (fallback)</li>
+        <li>Dashboard básico de métricas de adopción</li>
+        <li>Logging de intents para mejora continua</li>
+        <li>Documentación técnica completa</li>
+        <li>Capacitación al equipo RRHH</li>
+        <li>QA conversacional con casos reales</li>
+      </ul>
+    </div>
+
+    <div class="invest-card featured">
+      <div class="invest-tag">Operación · Incremento mensual</div>
+      <div class="invest-name">Soporte y<br>evolución</div>
+      <div class="invest-price">+ USD 400</div>
+      <div class="invest-price-detail">incremento sobre el fee mensual actual · ATS</div>
+      <ul class="invest-list">
+        <li>Infraestructura del agente IA + RAG</li>
+        <li>Mantenimiento del agente y base de conocimiento</li>
+        <li>1 transacción nueva trimestral incluida</li>
+        <li>Mejora continua sobre métricas reales</li>
+        <li>Soporte técnico con SLA definido</li>
+        <li>Updates de seguridad y compliance</li>
+        <li>Reporting mensual de uso e impacto</li>
+      </ul>
+      <div class="invest-note">
+        Las 7 transacciones nuevas (certificado de trabajo, anticipo de sueldo, uniformes, día Omint, reintegro guardería, credencial, contacto Banco Ciudad) se incorporan dentro del ciclo mensual sin costos adicionales por desarrollo.
+      </div>
+    </div>
+  </div>
+
+  <div class="roi">
+    <div class="roi-grid">
+      <div>
+        <h3 class="roi-title">El ahorro no es solo en tokens.</h3>
+        <p class="roi-desc">
+          La conversación promedio del bot actual consume entre 2 y 5 turnos de menú antes de llegar a la información. El nuevo agente resuelve en 1 turno. Menos llamadas a IA, menos tiempo del colaborador, menos derivaciones a un humano que hoy contesta cosas que el bot podría responder solo.
+        </p>
+      </div>
+      <div class="roi-metrics">
+        <div class="roi-metric">
+          <div class="roi-metric-num">~60%</div>
+          <div class="roi-metric-label">Menos consumo de tokens estimado</div>
+        </div>
+        <div class="roi-metric">
+          <div class="roi-metric-num">5×</div>
+          <div class="roi-metric-label">Más rápido para resolver consultas</div>
+        </div>
+        <div class="roi-metric">
+          <div class="roi-metric-num">7</div>
+          <div class="roi-metric-label">Procesos nuevos sin humano</div>
+        </div>
+        <div class="roi-metric">
+          <div class="roi-metric-num">24/7</div>
+          <div class="roi-metric-label">Disponibilidad sin escalamiento</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Automation Tech Studio</div>
+      <p class="footer-tagline">
+        Diseñamos arquitecturas conversacionales empresariales: agentes con IA, integraciones reales, y la rigurosidad técnica de un equipo que trabaja a diario sobre Botmaker.
+      </p>
+      <div class="footer-partner">
+        <div>
+          <div class="footer-partner-label">Plataforma</div>
+          <img src="data:image/jpeg;base64,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" alt="Botmaker" />
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <div class="footer-col-title">Especialización</div>
+      <ul>
+        <li>Agentes conversacionales con IA</li>
+        <li>Arquitecturas Botmaker</li>
+        <li>Integraciones empresariales</li>
+        <li>Optimización de bots productivos</li>
+        <li>RAG sobre bases corporativas</li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <div class="footer-col-title">Stack técnico</div>
+      <ul>
+        <li>Botmaker · partner oficial</li>
+        <li>Google Workspace · Sheets · Apps Script</li>
+        <li>Microsoft 365 · Power Automate · Azure</li>
+        <li>Gemini · Claude · OpenAI</li>
+        <li>SheetDB · Supabase · Vector DBs</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>ATS · Propuesta confidencial Omint RRHH</span>
+    <span>v1.0 · 2026</span>
+  </div>
+</footer>
+
+<script>
+// BASE DE CONOCIMIENTO DE OMINT (extracto del docx oficial)
+const KNOWLEDGE_BASE = `
+BASE DE CONOCIMIENTO RRHH OMINT
+
+[ACCESO A INTRANET - CLICKOMINT]
+- ClickOmint es la intranet oficial. Contiene info sobre propuesta de valor para el empleado (beneficios) y focos del negocio.
+- URL: https://clickomint.com.ar
+- Se ingresa únicamente con DNI (sin puntos)
+- Disponible para todos los colaboradores
+
+[CREDENCIAL DE ACCESO AL EDIFICIO]
+Casos: ingreso primera vez, renovación por pérdida, renovación por robo/rotura
+- Acción: enviar mail detallando motivo
+- Contacto: administraciondepersonal@omint.com.ar
+- Área: Administración de Personal
+- Importante: en robo/pérdida dar aviso inmediato por seguridad del edificio
+
+[CAMBIO DE BANCO DE COBRO - HABERES]
+- Antes de iniciar: consultar propuestas bancarias vigentes en ClickOmint (sección Propuesta de Valor / Convenios Bancarios)
+- En ClickOmint están los datos del Asesor Comercial de cada banco
+- Una vez con cuenta nueva, informar a Administración de Personal (CBU/Alias) para impactar en liquidación
+
+[CERTIFICADO DE TRABAJO / CERTIFICACIÓN LABORAL]
+- Enviar mail con el pedido
+- Contacto: administraciondepersonal@omint.com.ar
+- Recomendado: incluir DNI y motivo (alquiler, banco, etc) para agilizar
+
+[SOLICITUD DE UNIFORMES]
+- Enviar mail a: uniformes@omint.com.ar
+- OBLIGATORIO: poner en CC al líder directo
+- Área responsable: Departamento de Beneficios
+
+[PRÉSTAMOS PERSONALES BANCO CIUDAD]
+- Beneficio exclusivo para colaboradores
+- Relación cuota-ingreso: hasta 40% del ingreso neto
+- NO es obligatorio tener caja de ahorro previa
+- Ejecutivo: Rodrigo Montechiesi
+- WhatsApp: 11 3703 7555
+- Mail: rmontechiesi@bancociudad.com.ar
+
+[BIENVENIDA Y ONBOARDING]
+- Sitio del ingresante: https://www.clickomint.com.ar/destacados/nota/te-damos-la-bienvenida-a-grupo-omint
+- Para nuevos ingresos, inducción, primer día
+
+[SOPORTE TÉCNICO]
+- Plataforma: Sistema de tickets ITSM Omint
+- Acceso: con usuario corporativo
+- Para problemas (falla/error): cargar Ticket de Incidente
+- Para pedidos nuevos (accesos, licencias, equipos): Formulario de Solicitud de Servicio
+- Tipos: Software o Hardware
+- Importante: comunicación se centraliza en el ticket, no mandar mails extra
+- Si soporte pide info y no respondés, el ticket se cierra solo
+- Una vez resuelto, 10 días para calificar la atención
+
+[BÚSQUEDAS INTERNAS - MOVILIDAD]
+- Portal de Talento
+- Requisitos: mínimo 1 año en rol actual, sin sanciones vigentes, competencias requeridas
+- Es recomendable y necesario avisar a tu líder
+- Proceso: evaluaciones técnicas, perfil, entrevistas
+- Si no sos seleccionado: el equipo de Talento contacta para feedback
+- Si sos seleccionado: plan de traspaso de 30 días promedio
+- Contacto: talentoyaprendizaje@omint.com.ar
+- Instructivo: https://www.clickomint.com.ar/documentos/Como-me-postulo-a-las-busquedas-internas.pdf
+
+[CONVENIOS UNIVERSITARIOS]
+Universidad Siglo 21:
+- 10% off en aranceles semestrales
+- Grado, posgrado, educación continua
+- Beneficiarios: colaborador + familiares directos (padres, hijos, hermanos, cónyuges)
+- Acumulable con otras promos
+- Acceder: presentar DNI + Recibo de sueldo (+ vínculo si es familiar)
+- Web: www.21.edu.ar
+
+UADE:
+- 20% off en Gestión de Servicios de Salud (diplomaturas online, tecnicatura, licenciatura)
+- 10% off en Grado y Pregrado
+- 20% off en Posgrados, Maestrías, Especializaciones
+- Requisito: mín 3 materias (carreras) o 2 (diplomatura) y aprobar por cuatrimestre
+- Acreditar relación laboral al inicio de cada cuatrimestre
+- Web: www.uade.edu.ar
+
+CUI (Centro Universitario de Idiomas):
+- 20% off exclusivo colaboradores
+- Cursos grupales (regulares, intensivos, trimestrales), online o presencial
+- Cualquier idioma de la oferta CUI
+
+[GESTIÓN DEL DESEMPEÑO Y OBJETIVOS]
+- Espacio de alineación entre colaborador y líder
+- Diseño de objetivos: con el líder, alineados con rol y estrategia
+- Reuniones periódicas de feedback recomendadas
+- Cierre: revisar logros, desafíos, habilidades, próximos pasos
+- Instructivo colaboradores: https://www.clickomint.com.ar/documentos/Como-diseno-mis-objetivos.pdf
+- Instructivo líderes: https://www.clickomint.com.ar/documentos/Como-reviso-y-apruebo-objetivos-lideres.pdf
+
+[APRENDIZAJE Y CAPACITACIÓN]
+- Portal de Talento: https://www.crehana.com/org/grupo-omint/learn/
+- Portal de Beneficios (sección Actividades): https://beneficiosomint.com
+- Instructivo rutas de aprendizaje: https://www.clickomint.com.ar/documentos/Como-navego-las-rutas-de-aprendizaje.pdf
+
+[BENEFICIO DE CUMPLEAÑOS]
+- Media jornada libre el día del cumpleaños
+- Requisitos: mín 3 meses de antigüedad + personal efectivo
+- Coordinar previamente con el líder
+- Si cae fin de semana o feriado: se puede tomar el día hábil anterior o posterior
+- Ingresar más tarde en vez de salir antes: sujeto a aprobación del líder
+
+[LICENCIA POR MATRIMONIO]
+- 14 días corridos con goce de sueldo
+- Se pueden tomar en cualquier momento del año
+- Se pueden sumar a vacaciones ordinarias
+- Solicitar en Portal de Autogestión con al menos 14 días de anticipación
+- Documentación obligatoria en legajo:
+  * Fotocopia del Acta de Matrimonio
+  * Constancia de CUIL del cónyuge
+  * DNI del cónyuge (frente y dorso)
+
+[REGALO POR MATRIMONIO - VOUCHER]
+- Voucher canjeable por productos o experiencias
+- Plazo: hasta 1 año desde el casamiento
+- Enviar mail SIMULTÁNEAMENTE a:
+  * administraciondepersonal@omint.com.ar
+  * beneficios@omint.com.ar
+
+[LICENCIAS POR NACIMIENTO Y FAMILIA]
+Maternidad (Gestante):
+- 90 días totales (45 pre + 45 post estándar)
+- Se pueden reducir días previos (mín 10) y sumar al período posterior
+- Cargar certificado médico con Fecha Probable de Parto en Portal Autogestión
+- Portal: https://login.abssa.net/Abssa_Cliente/GS/web/
+
+Paternidad / No Gestante:
+- 14 días corridos desde el nacimiento (incluye feriados)
+- Sin importar antigüedad
+- Portal Autogestión + Certificado de Nacimiento + formulario de solicitud
+
+Adopción:
+- Pre-adopción: 10 días no corridos para gestiones previas (presentar acta)
+- Adopción (cuidador primario): 90 días corridos con goce de sueldo desde guarda
+
+Casos especiales:
+- Nacimiento prematuro: 60 días corridos iniciales, después inicia maternidad/paternidad
+- Tratamientos de fertilidad: 10 días al año (certificado)
+- Hijos con discapacidad: 10 días no corridos al año (presentar CUD)
+- Pérdida gestacional: 5 días corridos (certificado médico)
+
+Soporte: administraciondepersonal@omint.com.ar
+
+[REGALO POR NACIMIENTO / ADOPCIÓN]
+- Obsequio especial de Grupo Omint
+- Plazo: dentro del primer año del nacimiento/guarda
+- Mail a: beneficios@omint.com.ar
+
+[DÍA OMINT - DÍA LIBRE ANUAL]
+- 1 día libre al año con goce de sueldo
+- Para esparcimiento, descanso, trámites personales
+- Requisito: 1 año de antigüedad
+- NO acumulable (se pierde si no se usa)
+- Su uso no debe afectar al sector → requiere coordinación previa
+- Se solicita exclusivamente por Portal de Autogestión
+
+[REINTEGRO POR GUARDERÍA]
+- Para hijos/as de 45 días a 4 años inclusive
+- Reintegro mensual: hasta 40% del Salario Mínimo, Vital y Móvil (SMVM)
+- Trámite mensual por Portal de Autogestión:
+  1. Subir factura mensual
+  2. Comunicaciones > Enviar
+  3. Seleccionar DDJJ Guardería
+
+[GIMNASIOS Y BIENESTAR]
+- Red de gimnasios + clases online + apps de bienestar
+- Modalidades:
+  * Presencial: 1 suscripción para acceder a cientos de centros
+  * Digital gratuito: versión premium de 10 apps
+  * Digital premium: clases online desde cualquier lugar
+- Para colaborador + grupo familiar
+- Consultar planes en ClickOmint
+
+[BONDA - PLATAFORMA DE DESCUENTOS]
+- Portal de beneficios y descuentos externos
+- Rubros: compras, indumentaria, gastronomía, educación, turismo, gimnasios, deportes
+- Acceder: beneficiosomint.com
+- Descargar cupones o códigos directamente
+
+[SEMANA EXTRA DE VACACIONES]
+- 7 días corridos adicionales sobre lo establecido en LCT
+- Vigencia: desde primer año hasta cumplir 5 años en la compañía
+- Al cumplir 5 años: se unifica con plazos legales
+- Aplica a contratos a tiempo indeterminado en OMINT Prepaga y OMINT Assistance
+- NO incluye plus vacacional (solo tiempo de descanso)
+- Saldo se refleja en Portal de Autogestión
+
+[VOLUNTARIADO CORPORATIVO]
+- Programa de iniciativas solidarias del Grupo Omint
+- Para sumarse: ClickOmint, sección Voluntariado
+- Conocer requisitos de cada iniciativa y registrarse
+
+[ACREDITACIÓN DE SUELDOS]
+- Pago de haberes: primer día hábil de cada mes durante la jornada
+- Consulta de recibos:
+  1. Portal de Autogestión
+  2. Iniciar sesión
+  3. Sección Solicitudes
+  4. Mis recibos
+  5. Elegir período y descargar PDF
+
+[ANTICIPOS DE SUELDO]
+- Monto máximo: hasta 50% del sueldo bruto
+- Límite: hasta 3 anticipos por año calendario
+- Antelación mínima: 48 horas antes de fechas de acreditación
+- Calendario:
+  * Meses de 4 viernes: pago el 2° y 3° viernes
+  * Meses de 5 viernes: pago el 3° y 4° viernes
+- Gestión: Portal de Autogestión > Beneficios > Adelanto de sueldo
+- Liquidación analiza y envía mail con resultado
+
+[AGUINALDO - SAC]
+- Ley de Contrato de Trabajo 20.744 Art. 122
+- 1° cuota: vencimiento 30 de junio
+- 2° cuota: vencimiento 18 de diciembre
+- Cálculo: mejor remuneración bruta del semestre / 360 × días trabajados (máx 180/semestre)
+- Conceptos que descuentan días:
+  * Licencia sin goce de haberes
+  * Maternidad
+  * Ausencia injustificada
+  * Licencia por accidente / ART
+  * Reserva de puesto
+  * Excedencia o suspensión
+
+[PROTOCOLOS DE DERIVACIÓN A HUMANO]
+La IA debe derivar a un representante humano en estos casos:
+- Dudas en el recibo (conceptos o ítems de liquidación que no entiende el colaborador)
+- Horas extras / comisiones (discrepancias en estos conceptos)
+`;
+
+const SYSTEM_PROMPT = `Sos el asistente virtual de RRHH del Grupo Omint, una empresa de salud y seguros en Argentina.
+
+Te llamás "Asistente RRHH Omint" y comunicás por WhatsApp con colaboradores de la empresa.
+
+REGLAS DE COMUNICACIÓN:
+- Hablás SIEMPRE en español rioplatense (tuteo con "vos"). Usá "tenés", "querés", "podés", "sos", etc.
+- Tono cálido pero profesional. Cercano, claro, breve. Como un compañero de RRHH amable.
+- Respuestas breves y al grano. Cuando hay mucha info, usá listas o bullets cortos.
+- En WhatsApp se usa: *negrita con asteriscos* y emojis con moderación.
+- NUNCA inventes datos. Si no está en la base de conocimiento, decí que necesitás validar con el equipo de RRHH.
+- Si el caso es de derivación obligatoria (dudas en recibo, horas extras), avisá que vas a derivar.
+- Si el usuario es ambiguo, repreguntá.
+- Cerrá las respuestas con una pregunta de seguimiento ("¿Algo más?", "¿Querés ver X también?", "¿Te ayudo con otro tema?") cuando aplique.
+
+BASE DE CONOCIMIENTO OFICIAL:
+${KNOWLEDGE_BASE}
+
+IMPORTANTE: Respondé SOLO usando información de esta base. Si te preguntan algo fuera de scope (ej: política de la empresa que no esté acá, datos personales del colaborador, casos puntuales de su liquidación), decí que para eso van a tener que contactar al área correspondiente.`;
+
+// Sugerencias para el usuario
+const SUGGESTIONS = [
+  { tag: "Licencias", text: "Cuántos días me corresponden por casamiento?" },
+  { tag: "Sueldos", text: "Cómo veo mis recibos de sueldo?" },
+  { tag: "Beneficios", text: "Qué descuentos hay para estudiar?" },
+  { tag: "Trámites", text: "Necesito un certificado de trabajo" },
+  { tag: "Día libre", text: "Cómo me tomo el día Omint?" },
+  { tag: "Soporte", text: "Se me rompió la notebook, qué hago?" },
+  { tag: "Anticipo", text: "Puedo pedir un anticipo de sueldo?" },
+  { tag: "Gimnasio", text: "Hay descuentos en gimnasios?" }
+];
+
+// Historial de conversación
+let conversationHistory = [];
+let isLoading = false;
+
+const chat = document.getElementById('chat');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const suggestionsEl = document.getElementById('suggestions');
+
+// Render sugerencias
+SUGGESTIONS.forEach(s => {
+  const btn = document.createElement('button');
+  btn.className = 'demo-suggestion';
+  btn.innerHTML = `<span class="demo-suggestion-tag">${s.tag}</span>${s.text}`;
+  btn.onclick = () => {
+    userInput.value = s.text;
+    sendMessage();
+  };
+  suggestionsEl.appendChild(btn);
+});
+
+function getTime() {
+  const d = new Date();
+  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
+
+function formatMsgText(text) {
+  // Convierte *negrita* en <strong>, saltos de línea, URLs
+  let formatted = text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<strong>$1</strong>')
+    .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#00a3a3;">$1</a>');
+  return formatted;
+}
+
+function appendMsg(text, isUser) {
+  const m = document.createElement('div');
+  m.className = 'msg ' + (isUser ? 'user' : 'bot');
+  m.innerHTML = (isUser ? text : formatMsgText(text)) + `<div class="msg-time">${getTime()}</div>`;
+  chat.appendChild(m);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function appendTyping() {
+  const t = document.createElement('div');
+  t.className = 'typing';
+  t.id = 'typing';
+  t.innerHTML = '<span></span><span></span><span></span>';
+  chat.appendChild(t);
+  chat.scrollTop = chat.scrollHeight;
+  return t;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing');
+  if (t) t.remove();
+}
+
+async function callClaudeAPI(userMessage) {
+  conversationHistory.push({ role: 'user', content: userMessage });
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: conversationHistory
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('API error: ' + response.status);
+    }
+
+    const data = await response.json();
+    const botResponse = data.content
+      .filter(item => item.type === 'text')
+      .map(item => item.text)
+      .join('\n');
+
+    conversationHistory.push({ role: 'assistant', content: botResponse });
+    return botResponse;
+
+  } catch (error) {
+    console.error('Error:', error);
+    return 'Disculpá, tuve un problema técnico. Probá de nuevo en un momento. 🙏';
+  }
+}
+
+async function sendMessage() {
+  const text = userInput.value.trim();
+  if (!text || isLoading) return;
+
+  isLoading = true;
+  sendBtn.disabled = true;
+  userInput.disabled = true;
+
+  appendMsg(text, true);
+  userInput.value = '';
+
+  appendTyping();
+
+  // Pequeño delay para que se vea natural
+  await new Promise(r => setTimeout(r, 400));
+
+  const response = await callClaudeAPI(text);
+
+  removeTyping();
+  appendMsg(response, false);
+
+  isLoading = false;
+  sendBtn.disabled = false;
+  userInput.disabled = false;
+  userInput.focus();
+}
+
+userInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendMessage();
+});
+</script>
+
+</body>
+</html>
